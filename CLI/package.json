@@ -1,0 +1,14 @@
+{
+  "name": "grump",
+  "version": "0.0.1",
+  "description": "A simple command-line for running useful scripts",
+  "author": "The Grumpish Mermaids",
+  "preferGlobal": "true",
+  "engines": {
+    "node": ">=0.10"
+  },
+  "dependencies": {},
+  "bin": {
+    "grump": "grump.js"
+  }
+}
