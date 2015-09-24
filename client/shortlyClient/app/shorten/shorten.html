@@ -1,0 +1,22 @@
+<div id='container'>
+ <h1>shorten</h1>
+  <form name="shortenForm" ng-submit='addLink(url)'>
+    <input type='text' ng-model='url'>
+    <button>Shorten!</button>
+  </form>
+
+    <ul>
+      <li> 
+        <ul> 
+          <li> 
+            Site: <a href = "{{link.data.base_url}}/api/links/{{link.data.code}}"> {{link.data.title}} </a>
+          </li>
+          <li> Visits: {{link.data.visits}} </li>
+          <li> Code: {{link.data.code}} </li>
+        <ul> 
+      </li>
+    </ul>
+
+</div>
+
+

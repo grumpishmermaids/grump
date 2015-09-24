@@ -1,0 +1,40 @@
+<div id='container' ng-controller="uploadController">
+ <h1>Upload File</h1>
+  <fieldset>
+    <form name="fileUpload">
+      <div>
+        <span class='fieldlabel'>Github URL</span>
+        <input type='text' ng-model ="file.url">
+        <span class ='example'>Currently we support public repositories only</span>
+      </div>
+
+      <div>
+        <span class='fieldlabel'>Author</span>
+        <input type='text' ng-model ="file.author">
+        <span class ='example'>tell us about yourself</span>
+      </div>
+
+      <div>
+        <span class='fieldlabel'>Run File</span>
+        <input type='text' ng-model ="file.runFile">
+        <span class ='example'>runMeOnCommand.js (currently must be in your root directory)</span>
+      </div>
+      
+      <div>
+        <span class='fieldlabel'>Description of Package Functionality</span>
+        <input type='text' ng-model ="file.description">
+        <span class ='example'>'this does xyz for abc'</span>
+      </div>
+      
+      <div>
+        <span class='fieldlabel'>Command Name</span> 
+        <input class='taskinput' type='text'ng-model ="file.command">
+        <span class ='example'> this is what will be invoked in grump </span>
+      </div>
+    </form>
+
+  </fieldset>
+
+<div class='submitfile' ng-click='submitForm()'>
+  <button>to the grump-mobile!</button>
+</div>
