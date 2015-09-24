@@ -3,11 +3,10 @@ var spawn = require('child_process').spawn;
 //runs the file at a given path
 var runFile = function (path) {
   log("running file");
-  var childProcess = spawn('sh', [ path ], 
+  var childProcess = spawn('sh', [ path ],
       { stdio: [ 0, 'pipe' ] });
-  
   childProcess.stdout.on('data', function(data) {
-    log(data.toString()); 
+    log(data.toString());
   });
 };
 
@@ -26,7 +25,7 @@ var loadFile = function(url, path, callback) {
           callback(filePath);
         });
       });
-    } 
+    }
 
   })
   .on('error', function(err) {
