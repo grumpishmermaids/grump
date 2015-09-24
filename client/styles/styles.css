@@ -1,0 +1,16 @@
+.fieldlabel {
+  display:inline-block;
+  width:200px;
+}
+
+
+input {
+  display: inline-block;
+  width: 300px;
+}
+
+
+button {
+  margin: 50px;
+  float: auto;
+}
