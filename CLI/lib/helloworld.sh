@@ -2,5 +2,5 @@
 
 echo "hello world"
 
-echo -n "Enter your name and press [ENTER]: "
+echo "Enter your name:"
 read name
