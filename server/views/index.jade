@@ -3,8 +3,8 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
-  form(enctype = "multipart/form-data" action = "/upload/image" method = "post")
-    input(id="grump-file" type="file")
+  form(enctype="multipart/form-data" action = "/" method = "post")
+    input(id="grump-file" name="package" type="file")
     input(type="submit")
 //-   <form enctype="multipart/form-data" action="/upload/image" method="post">
 //-     <input id="image-file" type="file" />
