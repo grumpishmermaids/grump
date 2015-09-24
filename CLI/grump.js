@@ -38,7 +38,6 @@ utils.log("Grump script directory is:", grumpScriptDirectory);
 var filePath = path.join(grumpScriptDirectory, fileName);
 utils.log("Expected local file path is:", filePath);
 
-
 //if script file exists locally, run it.
 //Otherwise, get it from server, then run it.
 if(fs.existsSync(filePath)) {  //TODO: fix to non-deprecated file check
