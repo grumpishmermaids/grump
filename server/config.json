@@ -1,0 +1,10 @@
+{
+  "github": {
+    "key": "",
+    "secret": ""
+    },
+    "mongo" : {
+      "username":"",
+      "password" :""
+    }
+}
