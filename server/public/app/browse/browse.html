@@ -1,9 +1,8 @@
 <div id='container' ng-controller="BrowseController">
- <div class="cmd" ng-repeat"cmd in commands">
-    <span class="name">{{cmd.cmd}}</span>
-    <span class="author">{{cmd.author}}</span>
-    <span class="description">{{cmd.author}}</span>
-    <span class="repo"><a href="{{cmd.git.download}}"
+ <div class="grump" ng-repeat="grump in grumps">
+    <span class="name">{{grump.command}}</span>
+    <span class="owner">{{grump.owner.login}}</span>
+    <span class="description">{{grump.description}}</span>
+    <span class="repo"><a href="{{grump.url}}">{{grump.repoName}}</a></span>
  </div>
-
 </div>
