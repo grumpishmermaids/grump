@@ -1,10 +1,10 @@
 {
   "github": {
-    "key": "61c332d3744979e21dfc",
-    "secret": "885b2a816f246be42339ed8ebfc1e8c03d9c6811"
+    "key": "",
+    "secret": ""
   },
   "mongo": {
-    "username": "grump",
-    "password": "thefutureisnow"
+    "username": "",
+    "password": ""
   }
 }
