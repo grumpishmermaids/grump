@@ -1,0 +1,35 @@
+{
+  "name": "grump",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "DEBUG=grump:* nodemon ./server/bin/www",
+    "test" : "karma start karma.conf.js"
+  },
+  "dependencies": {
+    "body-parser": "~1.13.2",
+    "cookie-parser": "~1.3.5",
+    "debug": "~2.2.0",
+    "express": "~4.13.1",
+    "github": "^0.2.4",
+    "jade": "~1.11.0",
+    "mongodb": "^2.0.43",
+    "mongoose": "^4.1.8",
+    "morgan": "~1.6.1",
+    "request": "^2.63.0",
+    "serve-favicon": "~2.3.0"
+  },
+  "devDependencies": {
+    "karma": "^0.13.10",
+    "jshint-stylish": "^0.2.0",
+    "karma-chrome-launcher": "^0.1.4",
+    "karma-cli": "0.0.4",
+    "karma-jasmine": "^0.1.5",
+    "karma-mocha": "^0.1.4",
+    "karma-nested-reporter": "^0.1.1",
+    "karma-nyan-reporter": "0.0.43",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-unicorn-reporter": "^0.1.4",
+    "mocha": "^1.20.1"
+  }
+}

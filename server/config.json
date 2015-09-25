@@ -1,10 +1,10 @@
 {
   "github": {
-    "key": "61c332d3744979e21dfc",
-    "secret": "f80ae4b9cb7da00fdcc70d4ae02cbe5f071a1026"
-  },
-  "mongo": {
-    "username": "grump",
-    "password": "ad;klhasfkj;a g'hob gwHOI wg h[oaegr 'jfg M"
-  }
+    "key": "",
+    "secret": "this is a secret"
+    },
+    "mongo" : {
+      "username":"",
+      "password" :""
+    }
 }
