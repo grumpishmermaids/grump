@@ -24,7 +24,9 @@ var log = utils.log; //laziness!
 var scriptName = process.argv[2];  
 var scriptArgs = process.argv.slice(3);
 
-log("Grump needs something to grump. Try again?");
+if (!scriptName) {
+  log("Grump needs something to grump. Try again?");
+}
 
 // get arguments to grump command
 log("Processing command < %s >", scriptName);
@@ -68,27 +70,27 @@ if (knownGrumps[scriptName]) { //if known locally, just run script
 
 
 
-var fileName = scriptName + '.sh'; //assumption: we only have bash scripts
-                            //TODO: if allowing node, this has to change (just to key value store?)
+// var fileName = scriptName + '.sh'; //assumption: we only have bash scripts
+//                             //TODO: if allowing node, this has to change (just to key value store?)
 
-var grumpScriptDirectory = path.join(__dirname ,'lib');
-utils.log("Grump script directory is:", grumpScriptDirectory);
+// var grumpScriptDirectory = path.join(__dirname ,'lib');
+// utils.log("Grump script directory is:", grumpScriptDirectory);
 
-//grunt.js lives wherever npm puts modules you install "globally" (i.e. when using "-g" option on npm install)
-// ( --> so __dirname should be something like "/usr/local/lib/node_modules")
-//so our local stored scripts directory is at "[global node_modules directory]/grump/lib" 
+// //grunt.js lives wherever npm puts modules you install "globally" (i.e. when using "-g" option on npm install)
+// // ( --> so __dirname should be something like "/usr/local/lib/node_modules")
+// //so our local stored scripts directory is at "[global node_modules directory]/grump/lib" 
 
-//TODO: turn fileName into directory? run script in that directory identified by key/value pair of command name
-var filePath = path.join(grumpScriptDirectory, fileName);
-utils.log("Expected local file path is:", filePath);
+// //TODO: turn fileName into directory? run script in that directory identified by key/value pair of command name
+// var filePath = path.join(grumpScriptDirectory, fileName);
+// utils.log("Expected local file path is:", filePath);
 
-//if script file exists locally, run it.
-//Otherwise, get it from server, then run it.
-if(fs.existsSync(filePath)) {  //TODO: fix to non-deprecated file check
-  utils.log("Script < %s > found in local storage!", scriptName);
-  utils.runScript(filePath);
-} else {
-  utils.log("Could not find script < %s > locally.", scriptName);
-  utils.downloadScript(scriptName, filePath, utils.runScript); 
-  //TODO: refactor download to use promise, not callback
-}
+// //if script file exists locally, run it.
+// //Otherwise, get it from server, then run it.
+// if(fs.existsSync(filePath)) {  //TODO: fix to non-deprecated file check
+//   utils.log("Script < %s > found in local storage!", scriptName);
+//   utils.runScript(filePath);
+// } else {
+//   utils.log("Could not find script < %s > locally.", scriptName);
+//   utils.downloadScript(scriptName, filePath, utils.runScript); 
+//   //TODO: refactor download to use promise, not callback
+// }
