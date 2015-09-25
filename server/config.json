@@ -1,7 +1,7 @@
 {
   "github": {
     "key": "",
-    "secret": ""
+    "secret": "this is a secret"
     },
     "mongo" : {
       "username":"",
