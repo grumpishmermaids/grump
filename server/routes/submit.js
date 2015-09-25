@@ -12,12 +12,13 @@ router.post('/', function(req, res, next) {
   var repo = url.parse(req.body.repo).path.slice(1).split('/');
   console.log("1");
   utils.gitGet(repo, function(info){
-  console.log(info);
-    console.log("2");
+    
 
     //bundle git response + frontend data
     info.runFile = req.body.runFile;
     info.command = req.body.command;
+    console.log("2");
+    console.log(info);
 
     // post to mongo
     var pack = new Package(info);

@@ -3,6 +3,7 @@ angular.module('grump.services', [])
 .factory('Files', function ($http) {
   // Your code here
   var submitFile = function (obj) {
+    console.log('OBJECT:', obj);
     return $http({
       method: 'POST',
       data: obj,
