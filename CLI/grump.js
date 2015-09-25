@@ -62,7 +62,7 @@ if (knownGrumps[scriptName]) { //if known locally, just run script
       log("Couldn't fetch from github because...", error);
     })
     .then(function () {
-      utils.runScript(scriptName);  //then run script
+      utils.runScript(scriptInfo);  //then run script
       utils.updateKnownGrumps(knownGrumps);
     });
   });

@@ -7,7 +7,7 @@ var exec = require('child-process-promise').exec;  //Promisified version!
 var spawn = require('child_process').spawn;
 
 //TODO: better way to handle server URL?
-var serverApiUrl = "http://grumpy.keitharm.me/api/lib/";
+var serverApiUrl = "https://grumpjs.com/api/lib/";
 var grumpScriptDirectory = path.join(__dirname ,'lib');
 
 
@@ -29,14 +29,19 @@ var loadKnownGrumps = function() {
 var updateKnownGrumps = function(knownGrumps) {
   //TODO? error catching?
   var knownGrumpsFile = path.join(grumpScriptDirectory, 'grumps.json');
-  fs.writeFileSync(knownGrumpsFile, knownGrumps);
+  fs.writeFileSync(knownGrumpsFile, JSON.stringify(knownGrumps));
   
   log('Updated known grumps to %s!', Object.keys(knownGrumps).length);
 };
 
 //runs the script file at a given path
 var runScript = function (scriptInfo) {  //should this take 
-  var scriptPath = path.join(grumpScriptDirectory, scriptInfo.runFile);
+  log("running script with info:", scriptInfo);
+  log("grumpScriptDirectory...");
+  console.dir(grumpScriptDirectory);
+  log("scriptInfo.runFile...");
+  console.dir(scriptInfo.runFile);
+  var scriptPath = path.join(grumpScriptDirectory, scriptInfo.command, scriptInfo.runFile);
   log("Running script at path:", scriptPath);
   
   //create a child process* & pipe any standard input/output to this parent process
@@ -56,7 +61,7 @@ var findGrumpInfoOnServer = function (scriptName) {
  
     var pathOnServer = serverApiUrl + scriptName;
 
-    http.get(pathOnServer, function (res) {
+    https.get(pathOnServer, function (res) {
       log("Got response: %s", res.statusCode); //TODO include body.message from server
       
       if (res.statusCode === 404) {
