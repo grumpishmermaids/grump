@@ -27,7 +27,7 @@ var gitGet = function(repo, callback) {
   }, function(err, res) {
     if (err) console.log(err);
     info.githubID = res.id;
-    info.name = res.name;
+    info.repoName = res.name;
     info.description = res.description;
     info.url = res.url;
     info.created_at = res.created_at;

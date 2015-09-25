@@ -1,11 +1,8 @@
-var client = require('mongodb');
-var mongoose = require('mongoose');
-
-mongoose.connect('mongodb://grump:mermaids@ds051833.mongolab.com:51833/grump');
+var mongoose = require('../helpers/db.js');
 
 var packageSchema = new mongoose.Schema({
     githubID : Number,
-    name : String,
+    repoName : String,
     runFile : String,
     command : String,
     description : String,
