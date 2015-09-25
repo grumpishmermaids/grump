@@ -1,8 +1,12 @@
 <div id='container' ng-controller="BrowseController">
- <div class="grump" ng-repeat="grump in grumps">
+  <form name="searchForm">
+      <input type='text' ng-model='searchText'>
+  </form>
+
+ <div class="grump" ng-repeat="grump in grumps  | orderBy:'command' | filter:searchText">
     <span class="name">{{grump.command}}</span>
     <span class="owner">{{grump.owner.login}}</span>
     <span class="description">{{grump.description}}</span>
-    <span class="repo"><a href="{{grump.url}}">{{grump.repoName}}</a></span>
+    <span class="repo"> <a ng-href="{{grump.url}}">repo</a></span>
  </div>
 </div>
