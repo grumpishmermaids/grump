@@ -12,8 +12,18 @@ angular.module('grump.services', [])
     });
   };
 
+  var getGrumps = function () {
+    return $http({
+      method: 'GET',
+      url: 'api/lib'
+    }).then(function (resp) {
+      return resp;
+    });
+  };
+
   return {
-    submitFile: submitFile,
+    submitFile : submitFile,
+    getGrumps  : getGrumps
   };
 
 });
