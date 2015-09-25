@@ -10,15 +10,11 @@ var spawn = require('child_process').spawn;
 var serverApiUrl = "https://grumpjs.com/api/lib/";
 var grumpScriptDirectory = path.join(__dirname ,'lib');
 
-
 var loadKnownGrumps = function() {
   //TODO? error catching?
-
   var knownGrumpsFile = path.join(grumpScriptDirectory, 'grumps.json');
-  
   if(fs.existsSync(knownGrumpsFile)) {
     var knownGrumps = JSON.parse(fs.readFileSync(knownGrumpsFile));
-    
     log('Loaded %s known grumps!', Object.keys(knownGrumps).length);
     return knownGrumps;
   } else {
@@ -30,17 +26,11 @@ var updateKnownGrumps = function(knownGrumps) {
   //TODO? error catching?
   var knownGrumpsFile = path.join(grumpScriptDirectory, 'grumps.json');
   fs.writeFileSync(knownGrumpsFile, JSON.stringify(knownGrumps));
-  
   log('Updated known grumps to %s!', Object.keys(knownGrumps).length);
 };
 
 //runs the script file at a given path
 var runScript = function (scriptInfo) {  //should this take 
-  log("running script with info:", scriptInfo);
-  log("grumpScriptDirectory...");
-  console.dir(grumpScriptDirectory);
-  log("scriptInfo.runFile...");
-  console.dir(scriptInfo.runFile);
   var scriptPath = path.join(grumpScriptDirectory, scriptInfo.command, scriptInfo.runFile);
   log("Running script at path:", scriptPath);
   
@@ -57,42 +47,36 @@ var runScript = function (scriptInfo) {  //should this take
 
 var findGrumpInfoOnServer = function (scriptName) {
   return new Promise(function (resolve, reject) {
-    log("Requesting match for grump < %s > from server...", scriptName);
- 
+    log("Requesting match for grump '%s' from server...", scriptName); 
     var pathOnServer = serverApiUrl + scriptName;
 
     https.get(pathOnServer, function (res) {
       log("Got response: %s", res.statusCode); //TODO include body.message from server
-      
       if (res.statusCode === 404) {
-        throw new Error("Script %s not found on server.", scriptName);
+        throw new Error("Grump '%s' not found on server.", scriptName);
       } else if (res.statusCode > 500) {
         throw new Error("Server borked. Please try again later!");
       } else if (res.statusCode === 200) {
         var body = '';
-        log("do we get here?");
-
         res.on('data', function(chunk) {
-          log("got chunk!");
           body += chunk;
         });
         res.on('end', function() {
-          log("body is...", body);
-          console.dir(body);
           var grumpScriptInfo = JSON.parse(body);
-          log("new grumpscriptinfo is:", grumpScriptInfo);
+          log("Got new grump! \n--Command: %s \n--scriptFile: %s \n--Author: %s", grumpScriptInfo.command, grumpScriptInfo.runFile, grumpScriptInfo.owner.login);
           resolve(grumpScriptInfo);
         });
-        res.on('error', function(err){ log("DERP.");});
+        res.on('error', function(err){
+          reject(err);
+        });
       }
-    }).on('error', function(err) {
-      log("error on http get?");
+    })
+    .on('error', function(err) {
       reject(err);
     });
   });
 
 };
-
 
 //clone GIT repo to local folder
 var downloadFromGit = function (scriptInfo) {
@@ -108,34 +92,6 @@ var downloadFromGit = function (scriptInfo) {
     });
   });
 };
-
-
-
-
-// //TODO: refactor to use promise instead of callback
-// //loads and writes file, then calls a callback on the file path
-// var downloadScript = function (scriptName, localFilePath, callback) {
-//   log("Requesting match for grump < %s > from server...", scriptName);
-//   var pathOnServer = serverApiUrl + scriptName;
-//   http.get(pathOnServer, function (res) {
-//     log("Got response: %s -- %s", res.statusCode); //TODO include body.message from server
-
-//     //only writes file if it got back a good response
-//     //TODO: better logging?
-//     if (res.statusCode === 200) {
-//       var newFile = fs.createWriteStream(localFilePath);
-//       res.pipe(newFile);
-//       newFile.on('finish', function () {
-//         newFile.close(function () {
-//           callback(localFilePath);
-//         });
-//       });
-//     }
-//   })
-//   .on('error', function (err) {
-//     log("Got error: " + err.message);
-//   });
-// };
 
 //FORNOW: shortens console.log so its less offensive to me
 var log = console.log; //TODO: in future, log to a logfile?
