@@ -2,11 +2,34 @@ var express   = require('express');
 var path      = require('path');
 var config    = require('../config.json');
 var router    = express.Router();
+var Package   = require('../models/Package');
 
-// Search for a specific package in our DB
-router.get('/:package?', function(req, res, next) {
-  var package = req.params.package;
-  res.download(path.join(__dirname, "../uploads/" + package + ".sh"), package + ".sh");
+// Get all them grumps
+router.get('/', function(req, res, next) {
+  var grump = req.params.grump;
+  
+  //instead we need to query mongo
+  Package.find({},function (err, result) {
+    if(err) console.log(err);
+    res.send(result);
+  });
+
 });
+
+// Search for a specific grump in our DB
+router.get('/:grump?', function(req, res, next) {
+  var grump = req.params.grump;
+  
+  //instead we need to query mongo
+  Package.findOne({command:grump}, function (err, result) {
+    if(err) console.log(err);
+    res.send(result);
+  });
+
+});
+
+
+
+
 
 module.exports = router;

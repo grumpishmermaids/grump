@@ -1,16 +1,14 @@
 angular.module('grump.upload', [])
 
 .controller('UploadController', function ($scope, Files) {
-  $scope.file = {
-    url : null,
-    author : null,
+  $scope.doc= {
+    repo : null,
     runFile : null,
-    description : null,
     command : null
   };
 
-  $scope.submitForm = function() {
-    Services.submitFile (obj)
+  $scope.submitForm = function(obj) {
+    Files.submitFile(obj)
       .then(function(result){
         console.log(result);
       });
