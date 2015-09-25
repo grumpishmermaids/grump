@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
 
 });
 
-// Search for a specific package in our DB
+// Search for a specific grump in our DB
 router.get('/:grump?', function(req, res, next) {
   var grump = req.params.grump;
   
