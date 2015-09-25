@@ -7,7 +7,11 @@
   "engines": {
     "node": ">=0.10"
   },
-  "dependencies": {},
+  "dependencies": {
+    "bluebird": "^2.10.1",
+    "child-process-promise": "^1.1.0",
+    "follow-redirects": "0.0.7"
+  },
   "bin": {
     "grump": "grump.js"
   }
