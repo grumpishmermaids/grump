@@ -29,7 +29,7 @@ if (!scriptName) {
 }
 
 // get arguments to grump command
-log("Processing command < %s >", scriptName);
+log("Processing command '%s'", scriptName);
 
 //load known grumps
 //is this a key in known grumps?
@@ -47,7 +47,7 @@ log("Processing command < %s >", scriptName);
 var knownGrumps = utils.loadKnownGrumps(); //load known grump commands
 
 if (knownGrumps[scriptName]) { //if known locally, just run script
-  utils.log("Script < %s > found in local storage!", scriptName);
+  utils.log("Script '%s' found in local storage!", scriptName);
   utils.runScript(knownGrumps[scriptName]);
 } else {
   utils.findGrumpInfoOnServer(scriptName) //else find it on server
@@ -55,42 +55,14 @@ if (knownGrumps[scriptName]) { //if known locally, just run script
     log("Couldn't fetch from server because...", error);
   })
   .then(function (scriptInfo) {
-    knownGrumps[scriptName] = scriptInfo;  //update known grumps in memory
-
-    utils.downloadFromGit(scriptInfo)  //download from git
+    knownGrumps[scriptName] = scriptInfo;  //based on info from server  
+    utils.downloadFromGit(scriptInfo)      //download grump from git
     .catch(function (error) {
       log("Couldn't fetch from github because...", error);
     })
     .then(function () {
       utils.runScript(scriptInfo);  //then run script
-      utils.updateKnownGrumps(knownGrumps);
+      utils.updateKnownGrumps(knownGrumps); //if all went well, update known grumps in memory
     });
   });
 }
-
-
-
-// var fileName = scriptName + '.sh'; //assumption: we only have bash scripts
-//                             //TODO: if allowing node, this has to change (just to key value store?)
-
-// var grumpScriptDirectory = path.join(__dirname ,'lib');
-// utils.log("Grump script directory is:", grumpScriptDirectory);
-
-// //grunt.js lives wherever npm puts modules you install "globally" (i.e. when using "-g" option on npm install)
-// // ( --> so __dirname should be something like "/usr/local/lib/node_modules")
-// //so our local stored scripts directory is at "[global node_modules directory]/grump/lib" 
-
-// //TODO: turn fileName into directory? run script in that directory identified by key/value pair of command name
-// var filePath = path.join(grumpScriptDirectory, fileName);
-// utils.log("Expected local file path is:", filePath);
-
-// //if script file exists locally, run it.
-// //Otherwise, get it from server, then run it.
-// if(fs.existsSync(filePath)) {  //TODO: fix to non-deprecated file check
-//   utils.log("Script < %s > found in local storage!", scriptName);
-//   utils.runScript(filePath);
-// } else {
-//   utils.log("Could not find script < %s > locally.", scriptName);
-//   utils.downloadScript(scriptName, filePath, utils.runScript); 
-//   //TODO: refactor download to use promise, not callback
-// }
