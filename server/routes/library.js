@@ -4,6 +4,18 @@ var config    = require('../config.json');
 var router    = express.Router();
 var Package   = require('../models/Package');
 
+// Get all them grumps
+router.get('/', function(req, res, next) {
+  var grump = req.params.grump;
+  
+  //instead we need to query mongo
+  Package.find({},function (err, result) {
+    if(err) console.log(err);
+    res.send(result);
+  });
+
+});
+
 // Search for a specific package in our DB
 router.get('/:grump?', function(req, res, next) {
   var grump = req.params.grump;
@@ -15,5 +27,9 @@ router.get('/:grump?', function(req, res, next) {
   });
 
 });
+
+
+
+
 
 module.exports = router;
