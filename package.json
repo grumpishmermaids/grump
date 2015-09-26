@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "DEBUG=grump:* nodemon ./server/bin/www",
-    "test" : "karma start karma.conf.js"
+    "test": "karma start karma.conf.js"
   },
   "dependencies": {
     "body-parser": "~1.13.2",
@@ -20,8 +20,9 @@
     "serve-favicon": "~2.3.0"
   },
   "devDependencies": {
-    "karma": "^0.13.10",
+    "chai": "^3.3.0",
     "jshint-stylish": "^0.2.0",
+    "karma": "^0.13.10",
     "karma-chrome-launcher": "^0.1.4",
     "karma-cli": "0.0.4",
     "karma-jasmine": "^0.1.5",
@@ -30,6 +31,7 @@
     "karma-nyan-reporter": "0.0.43",
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-unicorn-reporter": "^0.1.4",
-    "mocha": "^1.20.1"
+    "mocha": "^1.20.1",
+    "supertest": "^1.1.0"
   }
 }

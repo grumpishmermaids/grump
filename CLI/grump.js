@@ -31,19 +31,6 @@ if (!scriptName) {
 // get arguments to grump command
 log("Processing command '%s'", scriptName);
 
-//load known grumps
-//is this a key in known grumps?
-  // if yes -> run it
-  // if no -> check our server
-    // if server doesn't know it --> SOL dude.
-    // if server knows it...
-          //call logic for looking to see if we have the file already
-          //execute call to github if its not already installed
-      // add key to known grumps file
-      // get it from git, save script to grumps directory
-      // save updated grumps file
-      // then run script
-
 var knownGrumps = utils.loadKnownGrumps(); //load known grump commands
 
 if (knownGrumps[scriptName]) { //if known locally, just run script
