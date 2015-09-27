@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "DEBUG=grump:* nodemon ./server/bin/www",
-    "test": "karma start karma.conf.js"
+    "test": "karma start karma.conf.js",
+    "testserver": "DEBUG=grump:* node ./server/bin/www & sleep 1; ./node_modules/.bin/mocha -R nyan specs/server/serverSpec.js; pkill -n node;"
   },
   "dependencies": {
     "body-parser": "~1.13.2",
@@ -32,6 +33,7 @@
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-unicorn-reporter": "^0.1.4",
     "mocha": "^1.20.1",
-    "supertest": "^1.1.0"
+    "supertest": "^1.1.0",
+    "request": "^2.64.0"
   }
 }
