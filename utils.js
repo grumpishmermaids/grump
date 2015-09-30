@@ -2,12 +2,22 @@ var path = require('path');
 var fs   = require('fs');
 var serverApiUrl = "https://grumpjs.com/api/lib/";
 
+
+// Local directory - wrap this around paths accessing the local
+// node module folder and not the CWD grump is being executed from
+var lodir = function(dir) {
+  var newArgs = [__dirname];
+  var args = Array.prototype.slice.call(arguments);
+  newArgs = newArgs.concat(args);
+  return path.join.apply(this, newArgs);
+};
+
 // Make the lib dir if it doesn't exist
 var initialRun = function() {
   // Create lib folder if it doesn't exist
-  fs.readFile('lib', function (err, data) {
+  fs.readFile(lodir('lib'), function (err, data) {
     if (err.code !== "EISDIR") {
-      fs.mkdirSync('lib');
+      fs.mkdirSync(lodir('lib'));
     }
   });
 };
@@ -17,9 +27,9 @@ var getInstalledGrumps = function() {
   var name = [];
   var specific = [];
 
-  var grumps = fs.readdirSync('lib');
+  var grumps = fs.readdirSync(lodir('lib'));
   grumps.forEach(function(grump) {
-    var sub = fs.readdirSync("lib/" + grump);
+    var sub = fs.readdirSync(lodir('lib', grump));
     name.push(grump);
     sub.map(function(item) {
       specific.push(item + "/" + grump);
@@ -29,12 +39,13 @@ var getInstalledGrumps = function() {
   return [name, specific];
 };
 
+// Fetch and update config
 var config = function() {
-  return JSON.parse(fs.readFileSync('config.json', 'utf-8'));
+  return JSON.parse(fs.readFileSync(lodir('config.json'), 'utf-8'));
 };
 
 var updateConfig = function(obj) {
-  fs.writeFileSync('config.json', JSON.stringify(obj));
+  fs.writeFileSync(lodir('config.json'), JSON.stringify(obj));
 };
 
 var validCommand = function(cmd) {
@@ -46,6 +57,7 @@ var validCommand = function(cmd) {
   return ((getInstalledGrumps()[type].indexOf(cmd)) === -1) ? false : true;
 };
 
+exports.lodir = lodir;
 exports.validCommand = validCommand;
 exports.initialRun = initialRun;
 exports.getInstalledGrumps = getInstalledGrumps;
