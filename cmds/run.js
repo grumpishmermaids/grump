@@ -16,8 +16,8 @@ module.exports = function(args) {
     console.log("Received grump: " + grump.cyan);
   }
 
-  // Check if the grump is installed
-  if (!utils.validCommand(grump)) {
-    console.log("Error".red + ": grump " + grump.cyan + " was not found. Are you sure it is installed?");
+  // Check if the grump is installed locally
+  if (!utils.validLocalGrump(grump)) {
+    console.log("Error".red + ": grump " + grump.cyan + " was not found locally...querying server...");
   }
 };

@@ -48,9 +48,9 @@ var updateConfig = function(obj) {
   fs.writeFileSync(lodir('config.json'), JSON.stringify(obj));
 };
 
-var validCommand = function(cmd) {
+var validLocalGrump = function(cmd) {
   var type = 0;
-  if (cmd.indexOf("/")) {
+  if (cmd.indexOf("/") !== -1) {
     type = 1;
   }
 
@@ -58,7 +58,7 @@ var validCommand = function(cmd) {
 };
 
 exports.lodir = lodir;
-exports.validCommand = validCommand;
+exports.validLocalGrump = validLocalGrump;
 exports.initialRun = initialRun;
 exports.getInstalledGrumps = getInstalledGrumps;
 exports.config = config();
