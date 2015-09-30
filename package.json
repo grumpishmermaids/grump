@@ -8,7 +8,9 @@
     "node": ">=0.10"
   },
   "dependencies": {
-    "colors": "^1.1.2"
+    "colors": "^1.1.2",
+    "follow-redirects": "0.0.7",
+    "http": "0.0.0"
   },
   "bin": {
     "grump": "grump.js"

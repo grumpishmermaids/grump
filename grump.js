@@ -29,7 +29,7 @@ if (cmds.indexOf(args[0]) !== -1) {
 }
 
 // Verbose logging
-if (utils.config.verbose !== "false") {
+if (utils.isVerbose()) {
   console.log("Loaded " + grumps.length.toString().green + " grump" + (grumps.length === 1 ? "" : "s"));
   console.log("Action received:\t", action.green);
   console.log("Arguments received:\t", args.toString().cyan + "\n");
