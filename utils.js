@@ -14,12 +14,9 @@ var lodir = function(dir) {
 
 // Make the lib dir if it doesn't exist
 var initialRun = function() {
-  // Create lib folder if it doesn't exist
-  fs.readFile(lodir('lib'), function (err, data) {
-    if (err.code !== "EISDIR") {
-      fs.mkdirSync(lodir('lib'));
-    }
-  });
+  try {
+    fs.mkdirSync(lodir('lib'));
+  } catch (e) {}
 };
 
 // Scan lib directory for installed grumps
