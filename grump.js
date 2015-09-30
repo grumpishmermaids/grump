@@ -1,55 +1,39 @@
 #!/usr/bin/env node
 
-// ### !!IMPORTANT README!! ###
-//  The first line of this file that starts with hashbang ("#!") IS NOT A COMMENT. DO NOT DELETE.
-//  It's part of the magic grump a CLI (Command Line Interface) -- see explanation below
-//    ##THE MAGIC##
-//    -PART 1: We set a "bin" option in our package.json that makes a "grump" command (in "/usr/bin") that points to this grump.js file
-//            (note: grump.js is in turn copied to /usr/local/lib/node_modules/grump by "npm install -g").
-//    -PART 2: The hashbang on line 1 tells the shell (where you ran the command) to execute whatever your
-//             local user environment ("/usr/bin/env") thinks the "node" command is on everything that follows.
-//    -PART 3: All words typed in the original command (e.g. "grump make me a sandwich")
-//             get stored in an environment object (array) called "process.argv", which we will now use to get the grump arguments.
+var path  = require('path');
+var fs    = require('fs');
+var color = require('colors');
+var utils = require('./utils.js');
 
-// required node packages
-var path = require('path');
-var fs = require('fs');
-var utils = require('./utils.js');  //local
-var log = utils.log; //laziness!
+var action = process.argv[2] || "";
+var args   = process.argv.slice(3);
 
+// Perform initial run actions for 1st time running grump
+utils.initialRun();
 
-//we'll just assume whatever comes after "grump" is the command,
-//and pass that command the rest of the arguments
-//TODO: make this more cleverer? flexibleler?
-var scriptName = process.argv[2];  
-var scriptArgs = process.argv.slice(3);
+// Load in available commands
+var cmds = [];
+fs.readdirSync('./cmds').forEach(function(file) {
+  cmds.push(file.slice(0, -3));
+});
 
-if (!scriptName) {
-  log("Grump needs something to grump. Try again?");
+// Get installed grumps
+var grumps = utils.getInstalledGrumps();
+
+// Verbose logging
+if (utils.config.verbose !== "false") {
+  console.log("Loaded " + grumps.length + " grump" + (grumps.length === 1 ? "" : "s"));
+  console.log("Action received:", action.green);
+  console.log("Arguments received:", args.toString().cyan + "\n");
 }
 
-// get arguments to grump command
-log("Processing command '%s'", scriptName);
+// Execute commands
 
-var knownGrumps = utils.loadKnownGrumps(); //load known grump commands
-
-if (knownGrumps[scriptName]) { //if known locally, just run script
-  utils.log("Script '%s' found in local storage!", scriptName);
-  utils.runScript(knownGrumps[scriptName]);
+if (action === undefined || action === "") {
+  console.log("usage: grump [command] [args]");
+  //require('./cmds/help')(args);
+} else if (cmds.indexOf(action) !== -1) {
+  require('./cmds/' + action)(args);
 } else {
-  utils.findGrumpInfoOnServer(scriptName) //else find it on server
-  .catch(function (error) {
-    log("Couldn't fetch from server because...", error);
-  })
-  .then(function (scriptInfo) {
-    knownGrumps[scriptName] = scriptInfo;  //based on info from server  
-    utils.downloadFromGit(scriptInfo)      //download grump from git
-    .catch(function (error) {
-      log("Couldn't fetch from github because...", error);
-    })
-    .then(function () {
-      utils.runScript(scriptInfo);  //then run script
-      utils.updateKnownGrumps(knownGrumps); //if all went well, update known grumps in memory
-    });
-  });
+  console.log("Unknown command");
 }
