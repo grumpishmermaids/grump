@@ -1,7 +1,9 @@
-var path  = require('path');
-var fs    = require('fs');
-var http  = require('http');
-var https = require("follow-redirects").https;
+var path   = require('path');
+var fs     = require('fs');
+var http   = require('http');
+var https  = require("follow-redirects").https;
+var mkdirp = require('mkdirp');
+var exec   = require('child-process-promise').exec;
 
 var serverApiUrl = "https://grumpjs.com/api/lib/";
 
@@ -63,37 +65,77 @@ var validLocalGrump = function(grump) {
 };
 
 // Query Grumpjs server for grump
-var queryServer = function(grump) {
+var queryServer = function(grump, cb) {
   if (config().isVerbose) console.log("Querying grumpjs server for grump " + grump.cyan);
 
   https.get(serverApiUrl + grump, function (res) {
     if (config().isVerbose) console.log("Received statusCode " + res.statusCode.toString().green + " from server.");
 
     if (res.statusCode === 404) {
-      console.log("Error".red + ": Grump " + grump.cyan + " was not found on the server.");
+      cb("Error".red + ": Grump " + grump.cyan + " was not found on the server.", null);
     } else if (res.statusCode > 500) {
-      console.log("Error".red + ": Something went wrong on grumpjs. Please try again later.");
+      cb("Error".red + ": Something went wrong on grumpjs. Please try again later.", null);
     } else if (res.statusCode === 200) {
       var body = '';
       res.on('data', function(chunk) {
         body += chunk;
       });
       res.on('end', function() {
-        console.log(body);
-        // var grumpScriptInfo = JSON.parse(body);
-        // log("Got new grump! \n--Command: %s \n--scriptFile: %s \n--Author: %s", grumpScriptInfo.command, grumpScriptInfo.runFile, grumpScriptInfo.owner.login);
-        // //resolve(grumpScriptInfo);
+        body = JSON.parse(body);
+        if (body.grumps.length === 0) {
+          cb("Error".red + ": No grumps named " + grump.cyan + " were found.", body);
+        } else {
+          cb(null, body);
+        }
       });
       res.on('error', function(err){
-        console.log("Error".red + ": " + err);
+        cb(err, null);
       });
     }
   })
   .on('error', function(err) {
-    console.log("Error".red + ": " + err);
+    cb(err, null);
   });
 };
 
+var install = function(repo, cb) {
+  var command = repo.command;
+  var author  = repo.owner.login;
+  console.log("Installing " + author.green + "/" + command.cyan + "...");
+
+  // Recursively create command and author directory
+  mkdirp.sync(lodir("lib", command, author));
+
+  // Clone from github
+  var gitCloneCommand = 'git clone ' + repo.cloneUrl + ' ' + lodir("lib", command, author);
+  exec(gitCloneCommand)
+  .fail(function (err) {
+    console.log("Error".red + ": Something went wrong while attempting to clone " + grump.cyan + ".");
+  })
+  .then(function () {
+    // Write repo json file
+    fs.writeFile(lodir("lib", command, author, ".grumpInstall.json"), JSON.stringify(repo), function(err) {
+      if (err) {
+        console.log("Error".red + ": Something went wrong while attempting to write Grump Installation file.");
+      } else {
+        cb();
+      }
+    });
+  });
+};
+
+var run = function(grump, args) {
+  // specific grump
+  if (grump.indexOf("/") !== -1) {
+
+    console.log("specific: " + grump);
+  } else {
+    console.log("general: " + grump);
+  }
+};
+
+exports.install = install;
+exports.run = run;
 exports.queryServer = queryServer;
 exports.isVerbose = isVerbose;
 exports.lodir = lodir;

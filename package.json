@@ -8,9 +8,11 @@
     "node": ">=0.10"
   },
   "dependencies": {
+    "child-process-promise": "^1.1.0",
     "colors": "^1.1.2",
     "follow-redirects": "0.0.7",
-    "http": "0.0.0"
+    "http": "0.0.0",
+    "mkdirp": "^0.5.1"
   },
   "bin": {
     "grump": "grump.js"
