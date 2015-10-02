@@ -4,6 +4,7 @@ var http   = require('http');
 var https  = require("follow-redirects").https;
 var mkdirp = require('mkdirp');
 var exec   = require('child-process-promise').exec;
+var spawn  = require('child_process').spawn;
 
 var serverApiUrl = "https://grumpjs.com/api/lib/";
 
@@ -41,17 +42,23 @@ var initialRun = function() {
 var getInstalledGrumps = function() {
   var name = [];
   var specific = [];
+  var combo = {};
 
   var grumps = fs.readdirSync(lodir('lib'));
   grumps.forEach(function(grump) {
+    var group = [];
     var sub = fs.readdirSync(lodir('lib', grump));
+
     name.push(grump);
     sub.map(function(item) {
+      group.push([item, grump]);
       specific.push(item + "/" + grump);
     });
+
+    combo[grump] = group;
   });
 
-  return [name, specific];
+  return [name, specific, combo];
 };
 
 // Check if grump ( specific (keith/hello) or general (hello) ) exists
@@ -66,10 +73,10 @@ var validLocalGrump = function(grump) {
 
 // Query Grumpjs server for grump
 var queryServer = function(grump, cb) {
-  if (config().isVerbose) console.log("Querying grumpjs server for grump " + grump.cyan);
+  if (isVerbose()) console.log("Querying grumpjs server for grump " + grump.cyan);
 
   https.get(serverApiUrl + grump, function (res) {
-    if (config().isVerbose) console.log("Received statusCode " + res.statusCode.toString().green + " from server.");
+    if (isVerbose()) console.log("Received statusCode " + res.statusCode.toString().green + " from server.");
 
     if (res.statusCode === 404) {
       cb("Error".red + ": Grump " + grump.cyan + " was not found on the server.", null);
@@ -101,7 +108,7 @@ var queryServer = function(grump, cb) {
 var install = function(repo, cb) {
   var command = repo.command;
   var author  = repo.owner.login;
-  console.log("Installing " + author.green + "/" + command.cyan + "...");
+  if (isVerbose()) { console.log("Installing " + author.green + "/" + command.cyan + "..."); }
 
   // Recursively create command and author directory
   mkdirp.sync(lodir("lib", command, author));
@@ -124,13 +131,39 @@ var install = function(repo, cb) {
   });
 };
 
-var run = function(grump, args) {
-  // specific grump
-  if (grump.indexOf("/") !== -1) {
 
-    console.log("specific: " + grump);
-  } else {
-    console.log("general: " + grump);
+var run = function(grump, args) {
+  var split = grump.indexOf("/");
+  var commandName = grump.substr(split+1);
+  var author = grump.substr(0, split);
+  if (isVerbose()) { console.log("Executing " + author.green + "/" + commandName.cyan + " grump..."); }
+
+  // Get the grump.json file
+  var grumpjson = JSON.parse(fs.readFileSync(lodir("lib", commandName, author, "grump.json"), 'utf-8'));
+
+  var defaultCommand = grumpjson.defaultCommand;
+  var type = grumpjson.commands[defaultCommand].scriptType;
+  var file = grumpjson.commands[defaultCommand].scriptPath;
+
+  // Bash commands
+  if (type === "bash") {
+    var childProcess = spawn('sh', [lodir("lib", commandName, author, file)], {stdio: [
+      0, // use parents stdin for child
+      'pipe', // pipe child's stdout to parent
+    ]});
+
+    childProcess.stdout.on('data', function (data) {
+      process.stdout.write(data);
+    });
+
+    childProcess.stderr.on('data', function (data) {
+      //var str = data.toString();
+      process.stderr.write(data);
+    });
+
+    childProcess.on('close', function (code) {
+        //console.log('process exit code ' + code);
+    });
   }
 };
 

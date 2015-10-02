@@ -22,6 +22,7 @@ module.exports = function(args) {
       console.log("Error".red + ": grump " + grump.cyan + " was not found locally...querying server...");
     }
 
+    // Query server for grumps
     utils.queryServer(grump, function(err, res) {
       if (err) {
         if (err.code === "ENOTFOUND") {
@@ -33,7 +34,7 @@ module.exports = function(args) {
 
         // Multiple grumps found
         if (res.grumps.length > 1) {
-          console.log("Found multiple grumps named " + grump.cyan + ".");
+          console.log("Found multiple remote grumps named " + grump.cyan + ".");
           console.log("Please choose a specific grump from the list below and rerun your command.\n");
 
           res.grumps.forEach(function(grump) {
@@ -60,6 +61,30 @@ module.exports = function(args) {
 
   // Or else just run the grump
   } else {
-    utils.run(grump, args.slice(1));
+    var installedGrumps = utils.getInstalledGrumps();
+
+    // Specific grump.
+    if (grump.indexOf("/") !== -1) {
+      utils.run(grump, args.slice(1));
+
+    // General
+    } else {
+      // If more than one local grump installed with same name
+      if (installedGrumps[2][grump].length > 1) {
+        console.log("Found multiple local grumps named " + grump.cyan + ".");
+        console.log("Please choose a specific grump from the list below and rerun your command.\n");
+
+        installedGrumps[2][grump].forEach(function(grump) {
+          console.log("\t" + grump[0].green + "/" + grump[1].cyan);
+        });
+
+        console.log("\n");
+
+      // Since only 1 local grump exists, assume that is the one the user wanted.
+      } else {
+        var chosen = installedGrumps[2][grump][0];
+        utils.run(chosen[0] + "/" + chosen[1], args.slice(1));
+      }
+    }
   }
 };
