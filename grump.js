@@ -6,7 +6,7 @@ var color = require('colors');
 var utils = require('./utils.js');
 var pack  = require('./package.json');
 
-var args   = process.argv.slice(2);
+var args  = process.argv.slice(2);
 
 // Perform initial run actions for 1st time running grump
 utils.initialRun();

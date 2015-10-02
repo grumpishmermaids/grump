@@ -1,10 +1,12 @@
 var path   = require('path');
-var fs     = require('fs');
+var fs     = require('fs.extra');
 var http   = require('http');
 var https  = require("follow-redirects").https;
 var mkdirp = require('mkdirp');
 var exec   = require('child-process-promise').exec;
 var spawn  = require('child_process').spawn;
+var prompt = require('prompt');
+var _      = require('lodash');
 
 var serverApiUrl = "https://grumpjs.com/api/lib/";
 
@@ -14,6 +16,7 @@ var lodir = function(dir) {
   var newArgs = [__dirname];
   var args = Array.prototype.slice.call(arguments);
   newArgs = newArgs.concat(args);
+
   return path.join.apply(this, newArgs);
 };
 
@@ -136,16 +139,19 @@ var run = function(grump, args) {
   var split = grump.indexOf("/");
   var commandName = grump.substr(split+1);
   var author = grump.substr(0, split);
-  if (isVerbose()) { console.log("Executing " + author.green + "/" + commandName.cyan + " grump..."); }
+
+  console.log("Executing grump " + author.green + "/" + commandName.cyan + "...");
 
   // Get the grump.json file
   var grumpjson = JSON.parse(fs.readFileSync(lodir("lib", commandName, author, "grump.json"), 'utf-8'));
 
+  // Extract default command config
   var defaultCommand = grumpjson.defaultCommand;
   var type = grumpjson.commands[defaultCommand].scriptType;
   var file = grumpjson.commands[defaultCommand].scriptPath;
+  var grumpPath = lodir("lib", commandName, author, file);
 
-  // Bash commands
+  // Determine how to run the script
   var cmd;
   if (type === "bash") {
     cmd = "sh";
@@ -153,25 +159,209 @@ var run = function(grump, args) {
     cmd = "node";
   }
 
-  args.unshift(lodir("lib", commandName, author, file));
+  // Set up arguments to be passed into spawn
+  args.unshift(grumpPath);
 
-  var childProcess = spawn(cmd, args, {stdio: [
-    0, // use parents stdin for child
-    'pipe', // pipe child's stdout to parent
-  ]});
+  // Make backup of original script for variable injection
+  copyGrump(grumpPath, function() {
 
-  childProcess.stdout.on('data', function (data) {
-    process.stdout.write(data);
+    // Prompt for variables and store persistant values if first run
+    checkVars(function() {
+
+      // Finally, run the grump
+      runGrump(cmd, args, function() {
+
+        // And now, we can move the .bak file back to the original
+        fs.copy(grumpPath + ".bak", grumpPath, { replace: true }, function(err) {
+          if (err) {
+            console.log("Error".red + ": Something went wrong while copying backup of grump.");
+          }
+          fs.unlink(grumpPath + ".bak", function(err) {
+            if (err) {
+              console.log("Error".red + ": Something went wrong while deleting backup of grump.");
+            }
+          });
+        });
+      });
+    });
+
   });
 
-  childProcess.stderr.on('data', function (data) {
-    //var str = data.toString();
-    process.stderr.write(data);
-  });
+  function copyGrump(grump, cb) {
+    var from = grump;
+    var to   = grump + ".bak";
 
-  childProcess.on('close', function (code) {
+    // Check if .bak file exists
+    fs.stat(to, function(err, stat) {
+
+      // Copy was never deleted which means execution was canceled half way through
+      if (err === null) {
+
+        // Swap which file to copy from/to since .bak holds the original
+        // We don't need to make a backup...we need to restore the back up now.
+        var tmp = from
+        from = to;
+        to = tmp;
+      }
+
+      // Perform copy
+      fs.copy(from, to, { replace: true }, function(err) {
+        if (err) {
+          console.log("Error".red + ": Something went wrong while making copy of grump.");
+        }
+        cb();
+      });
+
+    });
+  }
+
+  function firstRun(cb) {
+    if (grumpjson.stats === undefined) {
+      //console.log("first run.");
+      cb(true);
+    } else {
+      //console.log(grumpjson.stats.executions + " runs.");
+      cb(false);
+    }
+  }
+
+  function checkVars(cb) {
+    var init;
+    if (grumpjson.stats === undefined) {
+      //console.log("first run.");
+      init = true;
+    } else {
+      //console.log(grumpjson.stats.executions + " runs.");
+      init = false;
+    }
+
+    promptVars(init, function(vars) {
+      injectVariables(vars, function() {
+        cb();
+      });
+    });
+  }
+
+  function promptVars(init, cb) {
+    // Sort persist/non-persist vars
+    var persist          = {};
+    var non_persist      = {};
+    var persist_keys     = [];
+    var non_persist_keys = [];
+
+    _.each(grumpjson.commands[defaultCommand].vars, function(variable, key) {
+      if (variable.persist && variable.persist.toString() === "true") {
+        persist[key] = variable;
+        persist_keys.push(key);
+      } else {
+        non_persist[key] = variable;
+        non_persist_keys.push(key);
+      }
+    });
+
+    var prompts = [];
+
+    // Also ask persistant variables since this is the 1st time running this grump
+    if (init) {
+      var prompts = prompts.concat(persist_keys);
+    }
+    var prompts = prompts.concat(non_persist_keys);
+
+    if (prompts.length === 0) {
+      cb({});  // Pass in empty variables object since no vars are available
+    } else {
+
+      var variables = {};
+      // If not first time, there are vars to fetch from grump.json
+      if (!init) {
+        variables = grumpjson.commands[defaultCommand].persist_vars;
+      }
+
+      prompt.message = author.green + "/" + commandName.cyan;
+      prompt.start();
+      prompt.get(prompts, function (err, results) {
+
+        // First time, so extract persist vars and save them to grump json
+        if (init) {
+
+          // Create new object to hold persist vars
+          grumpjson.commands[defaultCommand].persist_vars = {};
+
+          _.each(results, function(result, key) {
+
+            // Found a persist var
+            if (persist_keys.indexOf(key) !== -1) {
+              grumpjson.commands[defaultCommand].persist_vars[key] = result;
+            }
+          });
+        }
+
+        variables = _.merge(_.clone(variables), _.clone(results));
+        cb(variables);
+      });
+    }
+  }
+
+  function runGrump(cmd, args, cb) {
+    var childProcess = spawn(cmd, args, {stdio: [
+      0, // use parents stdin for child
+      'pipe', // pipe child's stdout to parent
+    ]});
+
+    // Update grump stats
+    updateStats();
+
+    // Save grump.json file changes
+    updateGrumpJSON(grumpjson);
+
+    childProcess.stdout.on('data', function (data) {
+      process.stdout.write(data);
+    });
+
+    childProcess.stderr.on('data', function (data) {
+      process.stderr.write(data);
+    });
+
+    childProcess.on('close', function (code) {
+      cb();
       //console.log('process exit code ' + code);
-  });
+    });
+
+    function updateStats() {
+      if (grumpjson.stats === undefined) {
+        grumpjson.stats = {};
+        grumpjson.stats.executions = 1;
+      } else {
+        grumpjson.stats.executions += 1;
+      }
+    }
+  }
+
+  function updateGrumpJSON(obj) {
+    fs.writeFileSync(lodir("lib", commandName, author, "grump.json"), JSON.stringify(obj));
+  }
+
+  function injectVariables(vars, cb) {
+    // Read in file
+    var contents = fs.readFile(grumpPath, 'utf-8', function(err, contents) {
+      if (err) {
+        console.log("Error".red + ": Something went wrong while attempting to read the grump file.");
+      }
+
+      // replace all occurances of variables with their values
+      _.each(vars, function(value, key) {
+        contents = contents.replace("grump_" + key, value);
+      });
+
+      // Write the new file
+      fs.writeFile(grumpPath, contents, function(err) {
+        if (err) {
+          console.log("Error".red + ": Something went wrong while attempting to write the grump file.");
+        }
+        cb();
+      });
+    });
+  }
 };
 
 exports.install = install;
