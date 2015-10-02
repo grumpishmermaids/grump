@@ -49,7 +49,8 @@ module.exports = function(args) {
           utils.install(res.grumps[0], function() {
 
             // and then pass in the args and run it
-            utils.run(grump, args.slice(1));
+            var chosen = res.grumps[0];
+            utils.run(chosen.owner.login + "/" + chosen.command, args.slice(1));
           });
 
         // No grumps found

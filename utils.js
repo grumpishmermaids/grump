@@ -146,25 +146,32 @@ var run = function(grump, args) {
   var file = grumpjson.commands[defaultCommand].scriptPath;
 
   // Bash commands
+  var cmd;
   if (type === "bash") {
-    var childProcess = spawn('sh', [lodir("lib", commandName, author, file)], {stdio: [
-      0, // use parents stdin for child
-      'pipe', // pipe child's stdout to parent
-    ]});
-
-    childProcess.stdout.on('data', function (data) {
-      process.stdout.write(data);
-    });
-
-    childProcess.stderr.on('data', function (data) {
-      //var str = data.toString();
-      process.stderr.write(data);
-    });
-
-    childProcess.on('close', function (code) {
-        //console.log('process exit code ' + code);
-    });
+    cmd = "sh";
+  } else if (type === "node") {
+    cmd = "node";
   }
+
+  args.unshift(lodir("lib", commandName, author, file));
+
+  var childProcess = spawn(cmd, args, {stdio: [
+    0, // use parents stdin for child
+    'pipe', // pipe child's stdout to parent
+  ]});
+
+  childProcess.stdout.on('data', function (data) {
+    process.stdout.write(data);
+  });
+
+  childProcess.stderr.on('data', function (data) {
+    //var str = data.toString();
+    process.stderr.write(data);
+  });
+
+  childProcess.on('close', function (code) {
+      //console.log('process exit code ' + code);
+  });
 };
 
 exports.install = install;
