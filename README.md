@@ -9,21 +9,23 @@ Find, use, and share useful actions from the command line
 ##### Our server, the command’s github repo, and the user’s library may have different versions of this grump.json object. #####
 REASON/RULE: Information grows with each step.
 
-1) The server contains a minimum amount of data (which it stores in its own database, and serves to client requests for info). This data is (at minimum):
+1) The server contains a minimum amount of data (which it stores in its own database as a "Package", and serves to client requests for info). This data is (at minimum):
 ```
 {
-	"author": (github handle),
 	"defaultCommand": (e.g. helloworld),
-	"repo": (github repo)
+	"author": (github handle),
+	"repoName": (github repo),
+	"cloneUrl": (full '.git' url for github clone command)
 }
 ```
 
 2) The github repo contains a grump.json file (which the script write must for now build off of a template). It contains more required fields:
 ```
 {
-	"author": "keitharm",
-	"repo": "https://github.com/keitharm/myGrump",
 	"defaultCommand": "helloWorld",
+	"author": "keitharm",
+	"repoName": "myGrump",
+	"cloneUrl": "https://github.com/keitharm/myGrump.git",
 	//"npmDependencies": "false",  //optional automatic npm install for nodejs scripts with a package.json, not necessary for mvp
 	"subcommands": {
 		"helloWorld": {
@@ -43,9 +45,10 @@ REASON/RULE: Information grows with each step.
 3) User gets full version of repo’s grump.json at clone time. User MAY modify their own grump.json when setting configs, depending on how Keith implements that.
 ```
 {
-	"author": "keitharm",
-	"repo": "https://github.com/keitharm/myGrump",
 	"defaultCommand": "helloWorld",
+	"author": "keitharm",
+	"repoName": "myGrump",
+	"cloneUrl": "https://github.com/keitharm/myGrump.git",
 	//"npmDependencies": "false",  //optional automatic npm install for nodejs scripts with a package.json, not necessary for mvp
 	"subcommands": {
 		"helloWorld": {
