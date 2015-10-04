@@ -15,7 +15,8 @@ REASON/RULE: Information grows with each step.
 	"defaultCommand": (e.g. helloworld),
 	"author": (github handle),
 	"repoName": (github repo),
-	"cloneUrl": (full '.git' url for github clone command)
+	"cloneUrl": (full '.git' url for github clone command),
+	"description": (description of repo. TODO(?): put into grump.json?)
 }
 ```
 
@@ -26,6 +27,7 @@ REASON/RULE: Information grows with each step.
 	"author": "keitharm",
 	"repoName": "myGrump",
 	"cloneUrl": "https://github.com/keitharm/myGrump.git",
+	"description": (description of repo. TODO(?): put into grump.json?)
 	//"npmDependencies": "false",  //optional automatic npm install for nodejs scripts with a package.json, not necessary for mvp
 	"subcommands": {
 		"helloWorld": {
@@ -49,6 +51,7 @@ REASON/RULE: Information grows with each step.
 	"author": "keitharm",
 	"repoName": "myGrump",
 	"cloneUrl": "https://github.com/keitharm/myGrump.git",
+	"description": (description of repo. TODO(?): put into grump.json?)
 	//"npmDependencies": "false",  //optional automatic npm install for nodejs scripts with a package.json, not necessary for mvp
 	"subcommands": {
 		"helloWorld": {
