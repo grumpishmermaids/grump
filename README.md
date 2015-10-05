@@ -5,7 +5,6 @@ __________________
 
 ##**What is Grump?**
 
-> Blockquote
 
 Grump is a command line utility for Mac that enables the saving and sharing of simple node and bash scripts (i.e. Grumps). Grump enables you to run your favorite scripts on any machine with an internet connection. Additionally with the ability to dynamically set variables at run time, sharing scripts between people is easy.
 
