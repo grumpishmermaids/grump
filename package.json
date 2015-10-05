@@ -1,6 +1,6 @@
 {
   "name": "grump",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Find, use, and share useful actions for the command line",
   "author": "The Grumpish Mermaids",
   "preferGlobal": "true",
