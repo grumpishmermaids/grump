@@ -109,8 +109,8 @@ var queryServer = function(grump, cb) {
 };
 
 var install = function(repo, cb) {
-  var command = repo.command;
-  var author  = repo.owner.login;
+  var command = repo.defaultCommand;
+  var author  = repo.author;
   if (isVerbose()) { console.log("Installing " + author.green + "/" + command.cyan + "..."); }
 
   // Recursively create command and author directory

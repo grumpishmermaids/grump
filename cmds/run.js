@@ -38,7 +38,7 @@ module.exports = function(args) {
           console.log("Please choose a specific grump from the list below and rerun your command.\n");
 
           res.grumps.forEach(function(grump) {
-            console.log("\t" + grump.owner.login.green + "/" + grump.command.cyan);
+            console.log("\t" + grump.author.green + "/" + grump.defaultCommand.cyan);
           });
 
           console.log("\n");
@@ -50,7 +50,7 @@ module.exports = function(args) {
 
             // and then pass in the args and run it
             var chosen = res.grumps[0];
-            utils.run(chosen.owner.login + "/" + chosen.command, args.slice(1));
+            utils.run(chosen.author + "/" + chosen.defaultCommand, args.slice(1));
           });
 
         // No grumps found
