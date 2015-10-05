@@ -76,13 +76,13 @@ var validLocalGrump = function(grump) {
 
 // Query Grumpjs server for grump
 var queryServer = function(grump, cb) {
-  if (isVerbose()) console.log("Querying grumpjs server for grump " + grump.cyan);
+  if (isVerbose()) console.log("Querying grumpjs server for " + grump.cyan);
 
   https.get(serverApiUrl + grump, function (res) {
     if (isVerbose()) console.log("Received statusCode " + res.statusCode.toString().green + " from server.");
 
     if (res.statusCode === 404) {
-      cb("Error".red + ": Grump " + grump.cyan + " was not found on the server.", null);
+      cb("Error".red + ": " + grump.cyan + " was not found on the server.", null);
     } else if (res.statusCode > 500) {
       cb("Error".red + ": Something went wrong on grumpjs. Please try again later.", null);
     } else if (res.statusCode === 200) {
@@ -93,7 +93,7 @@ var queryServer = function(grump, cb) {
       res.on('end', function() {
         body = JSON.parse(body);
         if (body.grumps.length === 0) {
-          cb("Error".red + ": No grumps named " + grump.cyan + " were found.", body);
+          cb("Error".red + ": No matches for '" + grump.cyan + "' were found on server.", body);
         } else {
           cb(null, body);
         }
