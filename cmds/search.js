@@ -12,7 +12,7 @@ module.exports = function(args) {
     return;
   }
   if (utils.isVerbose()) {
-    console.log("Searching for '%s' on server..." + search.cyan);
+    console.log("Searching for \'%s\' on server..." + search.cyan);
   }
 
   // Query server for grumps
